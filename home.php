@@ -1,118 +1,104 @@
 <?php
 require_once 'clases/Usuario.php';
-require_once 'clases/Cuenta.php';
-require_once 'clases/RepositorioCuenta.php';
+require_once 'clases/RepositorioPelicula.php';
+require_once 'clases/PeliculaFavorita.php';
 
 session_start();
-if (isset($_SESSION['usuario'])) {
-    $usuario = unserialize($_SESSION['usuario']);
-    $nomApe = $usuario->getNombreApellido();
-    $rc = new RepositorioCuenta();
-    $cuentas = $rc->get_all($usuario);
+
+if (isset($_SESSION['usuario'])) 
+{
+  $usuario = unserialize($_SESSION['usuario']);
+  $nomApe = $usuario->getNombreApellido();
+  $rc = new RepositorioPelicula();
+  $peliculas = $rc->get_all($usuario);
 } else {
-    header('Location: index.php');
+  header('Location: index.php');
 }
 ?>
+
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>Sistema bancario</title>
-        <link rel="stylesheet" href="bootstrap.min.css">
-    </head>
-    <body class="container">
-      <div class="jumbotron text-center">
-      <h1>Sistema bancario</h1>
-      </div>    
-      <div class="text-center">
-        <?php
-        if (isset($_GET['mensaje'])) {
-            echo '<p class="alert alert-primary">'.$_GET['mensaje'].'</p>';
-        }
-        ?>
-        <h3><?php echo $nomApe;?></h3>
-        <h3>Listado de cuentas</h3>
-        <table class="table table-striped">
-            <tr>
-                <th>Número</th><th>Saldo</th><th>Depositar</th><th>Extraer</th><th>Eliminar</th>
-            </tr>
-        <?php
-        if (count($cuentas) == 0) {
-            echo "<tr><td colspan='5'>No tiene cuentas creadas</td></tr>";
-        } else {
-            foreach ($cuentas as $unaCuenta) {
-                $n = $unaCuenta->getNumero();
-                echo '<tr>';
-                echo "<td>$n</td>";
-                echo "<td id='saldo-$n'>".$unaCuenta->getSaldo()."</td>";
-                echo "<td><button type='button' onclick='depositar($n)'>Depositar</button></td>";
-                echo "<td><button type='button' onclick='extraer($n)'>Extraer</button></td>";
-                echo "<td><a href='eliminar.php?n=$n'>Eliminar</a></td>";
-                echo '</tr>';
-            }
-        }
-        ?>
-        </table>
-        <br>
-        <div id="operacion">
-            <h3 id="tipo_operacion">Operación</h3>
-            <input type="hidden" id="tipo">
-            <input type="hidden" id="numero">
-            <label for="monto">Monto de la operación: </label>
-            <input type="number" id="monto"><br>
-            <button type="button" onclick="operacion();">Realizar operacion</button>
-        </div>
-        <hr>
-        <a class="btn btn-primary" href="crear_cuenta.php">Crear nueva cuenta</a>
+
+<head>
+  <title>Homepage</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <link href="site.css?v0.1" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div class="content_login">
+    <div class="content_title_login">
+      Peliculas favoritas
+    </div>
+    <div class="content_login_form flex_basic">
+      <div class="title_user_loged">
+        Bienvenido <?php echo $nomApe; ?>, aqui podra ver, modificar y eliminar sus Peliculas Favoritas <a href="agregarPelicula.php" class="link">ACA</a>
+      </div>
+      <a class="logout_user" href="logout.php">Cerrar sesión</a>
+    </div>
     
-        <p><a href="logout.php">Cerrar sesión</a></p>
-      </div> 
-<script>
-        function operacion() {
-            var tipo = document.querySelector('#tipo').value;
-            var cuenta = document.querySelector('#numero').value;
-            var monto = document.querySelector('#monto').value;
-            var cadena = "tipo="+tipo+"&cuenta="+cuenta+"&monto="+monto;
-
-            var solicitud = new XMLHttpRequest();
-
-            solicitud.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var respuesta = JSON.parse(this.responseText);
-                    var identificador = "#saldo-" + respuesta.numero_cuenta;
-                    var celda = document.querySelector(identificador);
-
-                    if(respuesta.resultado == "OK") {
-                        celda.innerHTML = respuesta.saldo;
-                    } else {
-                        alert(respuesta.resultado);
+      <table class='tabla' border='1' style="border-collapse: collapse" bordercolor="#111111">
+          <tr>
+              <th>NumeroPeli</th><th>Pelicula</th><th>Genero</th><th>Editar</th><th>Eliminar</th>
+          </tr>
+    <?php
+      if (count($peliculas) == 0) 
+      {
+          echo "<tr><td colspan='5'>No tiene peliculas creadas</td></tr>";
+      } else 
+        {
+          foreach ($peliculas as $unaPelicula) 
+          {
+              $id = $unaPelicula->getId();
+              echo '<tr>';
+              echo "<td>$id</td>";
+              echo "<td id='nombre_pelicula-$id'>".$unaPelicula->getNombrePelicula()."</td>";
+              echo "<td>".$unaPelicula->getGenero()."</td>";
+              echo "<td><button type='button' onclick='edicionNombrePelicula($id)'>Editar</button></td>";
+              echo "<td><a href='eliminar.php?id=$id'>Eliminar</a></td>";
+              echo '</tr>';
+          }
+      }
+    ?>
+      </table>
+      <div id="editar">
+                <h3>Editar</h3> 
+                <input type="hidden" id="editar">
+                <input type="hidden" id="numeroPeli">
+                <label for="pelicula">Pelicula: </label>
+                <input type="text" id="pelicula"><br>
+                <button type="button" onclick="editar();">Cambiar nombre</button>
+            </div>
+            <hr>
+          </div>
+    <script>
+        function editar()  { 
+                var editar = document.querySelector('#editar').value;
+                var numeroPeli = 4 
+                var pelicula/* monto*/  = document.querySelector('#pelicula').value;
+                
+    
+                var solicitud = new XMLHttpRequest();
+          
+                
+                    
+                    solicitud.onload = function () 
+                    {
+                      console.log(this.responseText)
                     }
-                    celda.scrollIntoView();
-                }
-            };
-            solicitud.open("POST", "operacion.php", true);
-            solicitud.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            solicitud.send(cadena);
+                    solicitud.open("GET", "editar.php?id="+numeroPeli);
+                    solicitud.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         }
-
-
-        function extraer(nroCuenta)
-        {
-            document.querySelector('#tipo').value = "e";
-            document.querySelector('#tipo_operacion').innerHTML = "Extracción";
-            document.querySelector('#numero').value = nroCuenta;
-            document.querySelector('#monto').focus();
-        }
-
-        function depositar(nroCuenta)
-        {
-            document.querySelector('#tipo').value = "d";
-            document.querySelector('#tipo_operacion').innerHTML = "Depósito";
-            document.querySelector('#numero').value = nroCuenta;
-            document.querySelector('#monto').focus();
-        }
-</script>
-    </body>
+        function edicionNombrePelicula(nroPelicula)
+            {
+                document.querySelector('#editar').value = "e";
+                document.querySelector('#numeroPeli').value = nroPelicula;
+                document.querySelector('#pelicula').focus();
+            }      
+            
+    
+    </script>
+  </div>
+</body>
 </html>
-

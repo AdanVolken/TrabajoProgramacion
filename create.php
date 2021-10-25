@@ -13,34 +13,41 @@ if (isset($_POST['usuario']) && isset($_POST['clave'])) {
     header('Location: ' . $redirigir);
 }
 ?>
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>Bienvenido al sistema</title>
-        <link rel="stylesheet" href="bootstrap.min.css">
-    </head>
-    <body class="container">
-      <div class="jumbotron text-center">
-      <h1>Sistema bancario</h1>
-      </div>    
-      <div class="text-center">
-        <h3>Crear nuevo usuario</h3>
-        <?php
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Crear Usuario</title>
+  <link href="site.css?v0.1" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div class="content_login">
+    <div class="content_title_login">
+      Peliculas favoritas
+    </div>
+    <div class="content_login_form">
+      <div class="title_form_log">
+        Crear Usuario
+      </div>
+
+      <?php
             if (isset($_GET['mensaje'])) {
                 echo '<div id="mensaje" class="alert alert-primary text-center">
                     <p>'.$_GET['mensaje'].'</p></div>';
             }
         ?>
 
-        <form action="create.php" method="post">
-            <input name="usuario" class="form-control form-control-lg" placeholder="Usuario"><br>
-            <input name="clave" type="password" class="form-control form-control-lg" placeholder="Contraseña"><br>
-            <input name="nombre" class="form-control form-control-lg" placeholder="Nombre"><br>
-            <input name="apellido" class="form-control form-control-lg" placeholder="Apellido"><br>
-            <input type="submit" value="Registrarse" class="btn btn-primary">
-        </form>        
-      </div> 
-    </body>
+      <form action="create.php" method="post">
+        <div class="content_input_login"><input name="usuario" placeholder="Usuario"></div>
+        <div class="content_input_login"><input name="clave" type="password" placeholder="Contraseña"></div>
+        <div class="content_input_login"><input name="nombre" placeholder="Nombre"></div>
+        <div class="content_input_login"><input name="apellido" placeholder="Apellido"></div>
+        <div class="content_btns_login"><input type="submit" value="Registrarse"></div>
+      </form>
+    </div>
+  </div>
+</body>
+
 </html>
