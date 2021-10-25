@@ -1,6 +1,8 @@
 <?php
 require_once 'Usuario.php';
 require_once 'RepositorioUsuario.php';
+require_once 'PeliculaFavorita.php';
+require_once 'RepositorioPelicula.php';
 
 class ControladorSesion
 {
@@ -10,7 +12,6 @@ class ControladorSesion
     {
         $repo = new RepositorioUsuario();
         $usuario = $repo->login($nombre_usuario, $clave);
-        //Si falló el login:
         if ($usuario === false) {
             return [false, "Error de credenciales"];
         } else {
@@ -33,6 +34,19 @@ class ControladorSesion
             session_start();
             $_SESSION['usuario'] = serialize($usuario);
             return [ true, "Usuario creado correctamente" ];
+        }
+    }
+    public function añadirPelicula($userID, $nombrePelicula, $genero)
+    {
+        $repo = new RepositorioPelicula();
+        $pelicula = new PeliculaFavorita($userID, $nombrePelicula, $genero);
+        $id = $repo->save($pelicula);
+        if ($id === false) {
+            return [ false, "Error en la creacion"];
+        }
+        else {
+            $pelicula->setId($id);
+            return [ true, $pelicula->getNombrePelicula()  . " se añadio correctamente." ];
         }
     }
 }

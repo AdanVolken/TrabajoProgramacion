@@ -21,8 +21,3 @@ class Usuario
     public function getApellido() {return $this->apellido;}
     public function getNombreApellido() {return "$this->nombre $this->apellido";}
 }
-
-
-
-
-
